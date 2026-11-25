@@ -1,0 +1,21 @@
+.chat-page {
+  padding: 20px 40px;
+  margin: 0 auto;
+
+  .chat-page__header {
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: #4c0f13;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+
+    .chat-page__header-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}

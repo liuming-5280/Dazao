@@ -1,0 +1,19 @@
+.language-switch {
+  --ant-segmented-item-selected-bg: #fff;
+  --ant-segmented-item-selected-color: #a3121a;
+
+  background-color: rgba(163, 18, 26, 0.08);
+
+  &.language-switch--block {
+    width: 100%;
+
+    :global(.ant-segmented-group) {
+      width: 100%;
+    }
+
+    :global(.ant-segmented-item) {
+      flex: 1;
+      text-align: center;
+    }
+  }
+}

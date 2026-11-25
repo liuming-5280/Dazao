@@ -1,0 +1,131 @@
+.base-layout {
+  padding-left: 224px;
+}
+
+.base-layout__sidebar {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 224px;
+  background-color: rgba(255, 251, 245, 0.78);
+  border-right: 1px solid rgba(200, 22, 29, 0.1);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+
+  .base-layout__sidebar-main {
+    flex-grow: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 18px;
+  }
+
+  .base-layout__sidebar-main-content {
+    flex-grow: 1;
+    flex-shrink: 0;
+    overflow: auto;
+  }
+}
+
+.base-layout__logo {
+  padding: 10px 18px;
+  padding-top: 26px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  .logo {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .base-layout__brand {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    .title {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 13px;
+      font-weight: 700;
+      color: #5c1014;
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      font-size: 10px;
+      color: #a4575c;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.base-layout__language {
+  flex-shrink: 0;
+  padding: 10px 18px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .base-layout__language-label {
+    font-size: 11px;
+    color: #a4575c;
+  }
+}
+
+.base-layout__nav-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 9px;
+  position: relative;
+  padding: 9px 18px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+
+  &:hover .base-layout__nav-header-title {
+    color: #c8161d;
+  }
+
+  &::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background-color: rgba(200, 22, 29, 0.12);
+    position: absolute;
+    bottom: 0;
+    left: 18px;
+    right: 18px;
+    transform: scaleY(0.5);
+  }
+
+  .base-layout__nav-header-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .base-layout__nav-header-title {
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+  }
+}
+
+.base-layout__content {
+  min-height: 100vh;
+}

@@ -1,0 +1,104 @@
+version: '3.8'
+services:
+  knowisle_api:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    hostname: knowisle_api
+    container_name: knowisle_api
+    environment:
+      - HF_ENDPOINT=https://hf-mirror.com
+      - DATABASE_URL=postgresql://postgres:pg123456@knowisle_pg:5432/gsk
+      - ES_HOST=http://es01:9200
+      - ROOT_PATH=http://localhost:8000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"  # 只保留应用服务的端口映射
+    volumes:
+      # 镜像 WORKDIR 为 /app 且代码通过 COPY . /app 打入，必须挂到 /app 才能生效
+      - ./app:/app
+      - ./nltk_data:/usr/local/nltk_data
+    command: ["uvicorn", "app_main:app", "--host", "0.0.0.0", "--port", "8000"]
+    restart: unless-stopped
+    depends_on:
+      - knowisle_pg
+      - es01
+      - redis
+    networks:
+      - knowisle_network
+
+  es01:
+    container_name: knowisle-es-01
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
+    volumes:
+      - knowisle_esdata:/usr/share/elasticsearch/data
+    env_file: .env
+    environment:
+      - node.name=es01
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - bootstrap.memory_lock=false
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - cluster.routing.allocation.disk.watermark.low=5gb
+      - cluster.routing.allocation.disk.watermark.high=3gb
+      - cluster.routing.allocation.disk.watermark.flood_stage=2gb
+      - TZ=${TIMEZONE}
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:9200"]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+    restart: on-failure
+    networks:
+      - knowisle_network
+
+  knowisle_pg:
+    container_name: knowisle_pg
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_PASSWORD=pg123456
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=gsk
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    networks:
+      - knowisle_network
+
+  redis:
+    container_name: knowisle-redis
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - knowisle_network
+
+volumes:
+  # 兼容改造前的历史数据卷，避免重建容器后 ES 索引丢失
+  knowisle_esdata:
+    name: backend_gsk_esdata01
+    driver: local
+  pg_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  knowisle_network:
+    driver: bridge
